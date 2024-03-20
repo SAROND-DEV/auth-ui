@@ -1,7 +1,16 @@
 <template>
     <section>
         <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-            <div class="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-neutral-800 border-neutral-700">
+            <div
+                class="relative w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-neutral-800 border-neutral-700"
+            >
+                <div
+                    v-if="authStore.loading"
+                    class="flex justify-center items-center absolute bg-black/50 top-0 left-0 right-0 bottom-0 z-10"
+                >
+                    <ProgressSpinner />
+                </div>
+
                 <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 class="text-xl font-bold leading-tight tracking-tight md:text-2xl text-white">
                         Войдите в свою учетную запись
@@ -20,13 +29,18 @@
                             type="text"
                             id="username"
                             v-model="username"
-                            :invalid="invalid"
+                            :invalid="!!invalidMessage"
                         />
                     </div>
 
                     <div>
                         <label for="password" class="block mb-2 text-sm font-medium text-white"> Пароль </label>
-                        <Password v-model="password" :feedback="false" class="w-full bg-gray-700" :invalid="invalid" />
+                        <Password
+                            v-model="password"
+                            :feedback="false"
+                            class="w-full bg-gray-700"
+                            :invalid="!!invalidMessage"
+                        />
                     </div>
 
                     <Button class="w-full" @click="signIn"> Войти </Button>
@@ -37,7 +51,7 @@
 
                     <p class="text-sm font-light text-gray-400">
                         У вас еще нет аккаунта?
-                        <RouterLink to="/register" class="font-medium hover:underline text-primary-500">
+                        <RouterLink :to="{ name: 'register' }" class="font-medium hover:underline text-primary-500">
                             Зарегистрироваться
                         </RouterLink>
                     </p>
@@ -51,6 +65,7 @@
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
+import ProgressSpinner from 'primevue/progressspinner'
 import { useAuthStore } from '@/stores/auth'
 
 import { ref } from 'vue'
@@ -60,18 +75,17 @@ const authStore = useAuthStore()
 const username = ref('')
 const password = ref('')
 const router = useRouter()
-const invalid = ref(false)
 const invalidMessage = ref('')
 
 const signIn = () => {
     authStore
         .signIn(username.value, password.value)
         .then(() => {
-            router.push('/')
+            invalidMessage.value = ''
+            router.push({ name: 'home' })
         })
         .catch((e) => {
             invalidMessage.value = e.response.data.error
-            invalid.value = true
         })
 }
 </script>

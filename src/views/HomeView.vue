@@ -19,11 +19,11 @@
             </template>
             <template #footer>
                 <div class="flex gap-3 mt-1">
-                    <RouterLink to="/register" class="w-full">
+                    <RouterLink :to="{ name: 'register' }" class="w-full">
                         <Button label="Регистрация" severity="secondary" outlined class="w-full" />
                     </RouterLink>
 
-                    <RouterLink to="/login" class="w-full">
+                    <RouterLink :to="{ name: 'login' }" class="w-full">
                         <Button label="Войти" class="w-full" />
                     </RouterLink>
                 </div>
